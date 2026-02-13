@@ -1,0 +1,258 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+
+export default function App() {
+  const [step, setStep] = useState(0);
+  const [noButtonPosition, setNoButtonPosition] = useState({ 
+    left: "60%", 
+    top: "60%" 
+  });
+  const [hearts, setHearts] = useState([]);
+
+  const handleNoButtonHover = () => {
+    setNoButtonPosition({
+      left: `${Math.random() * 70 + 15}%`,
+      top: `${Math.random() * 70 + 15}%`
+    });
+    
+    // Create floating hearts on hover
+    const newHeart = {
+      id: Date.now(),
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 2}s`
+    };
+    setHearts(prev => [...prev, newHeart]);
+    
+    // Clean up old hearts
+    setTimeout(() => {
+      setHearts(prev => prev.filter(heart => heart.id !== newHeart.id));
+    }, 3000);
+  };
+
+  const handleYesClick = () => {
+    // Create celebration hearts
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        const celebrationHeart = {
+          id: Date.now() + i,
+          left: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 1}s`,
+          size: `${Math.random() * 2 + 1}rem`
+        };
+        setHearts(prev => [...prev, celebrationHeart]);
+      }, i * 100);
+    }
+    setStep(3);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-rose-100 flex flex-col items-center justify-center p-4 font-sans">
+      {/* Floating hearts background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={`bg-heart-${i}`}
+            className="text-rose-300/50 text-3xl absolute"
+            initial={{ 
+              left: `${Math.random() * 100}%`, 
+              top: `${Math.random() * 100}%`,
+              scale: 0.2,
+              rotate: Math.random() * 360
+            }}
+            animate={{ 
+              top: ["0%", "110%"],
+              scale: [0.2, 1.2, 0.8],
+              rotate: [0, 360]
+            }}
+            transition={{ 
+              duration: 25 + Math.random() * 15,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
+            ❤️
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Steps */}
+      {step === 0 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 max-w-md w-full text-center border border-rose-100"
+        >
+          <div className="text-6xl mb-6 animate-pulse">💌</div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">Для самой прекрасной Леры</h1>
+          <p className="text-xl text-gray-600 mb-8">У меня есть особенный вопрос для тебя...</p>
+          <button 
+            onClick={() => setStep(1)}
+            className="bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-rose-300/50"
+          >
+            Начать наше приключение
+          </button>
+          
+          <div className="mt-8 pt-6 border-t border-rose-100">
+            <p className="text-sm text-gray-500">P.S. Обещаю, это будет весело ❤️</p>
+          </div>
+        </motion.div>
+      )}
+
+      {step === 1 && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 max-w-md w-full text-center border border-rose-100"
+        >
+          <div className="text-5xl mb-6">✨</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Сначала небольшое испытание...</h2>
+          <p className="text-lg text-gray-600 mb-6">Чтобы продолжить, найди и нажми на спрятанное сердечко в этом конверте:</p>
+          
+          <div 
+            className="relative w-48 h-32 mx-auto cursor-pointer bg-gradient-to-br from-amber-50 to-rose-50 rounded-2xl border-2 border-dashed border-rose-200 flex items-center justify-center overflow-hidden"
+            onClick={() => setStep(2)}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-6xl animate-bounce">✉️</div>
+            </div>
+            <motion.div
+              whileHover={{ scale: 1.2, rotate: [0, -10, 10, -10, 0] }}
+              transition={{ duration: 0.5 }}
+              className="absolute text-4xl text-rose-500"
+              style={{ 
+                left: "65%", 
+                top: "45%" 
+              }}
+            >
+              ❤️
+            </motion.div>
+          </div>
+          
+          <p className="text-sm text-gray-500 mt-4">Подсказка: оно любит прятаться в правом верхнем углу</p>
+        </motion.div>
+      )}
+
+      {step === 2 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 max-w-md w-full text-center border border-rose-100 relative overflow-hidden"
+        >
+          <div className="absolute -top-6 -right-6 text-8xl text-rose-100/50">💖</div>
+          <div className="absolute -bottom-8 -left-8 text-9xl text-pink-100/40">💕</div>
+          
+          <div className="relative z-10">
+            <div className="text-7xl mb-4 animate-heartbeat">🥰</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Лерочка, моя единственная...</h2>
+            <p className="text-xl text-gray-700 mb-8 font-medium">
+              Ты будешь моим Валентином?
+            </p>
+            
+            <div className="relative h-24 flex items-center justify-center mb-6">
+              <button 
+                onClick={handleYesClick}
+                className="bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold py-4 px-12 rounded-full text-xl transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-emerald-300/50 z-20 relative"
+              >
+                Да, конечно!
+              </button>
+              
+              <motion.button
+                onMouseOver={handleNoButtonHover}
+                style={{ 
+                  left: noButtonPosition.left, 
+                  top: noButtonPosition.top,
+                  position: 'absolute'
+                }}
+                className="bg-gradient-to-r from-rose-400 to-rose-600 hover:from-rose-500 hover:to-rose-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-rose-300/50 whitespace-nowrap z-10"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Нет
+              </motion.button>
+            </div>
+            
+            <p className="text-sm text-rose-500 font-medium">
+              P.S. Кнопка "Нет" очень стеснительная и убегает от внимания ❤️
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {step === 3 && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-gradient-to-br from-rose-400 via-pink-500 to-rose-600 flex flex-col items-center justify-center p-4 z-50"
+        >
+          <div className="text-center max-w-2xl mx-auto px-4">
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", damping: 10 }}
+              className="text-9xl mb-6"
+            >
+              😍
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-5xl md:text-6xl font-bold text-white mb-6"
+            >
+              Я безумно счастлив!
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-2xl md:text-3xl text-white mb-10 max-w-2xl mx-auto"
+            >
+              Спасибо, что ты есть в моей жизни, моя любимая Лерочка! ❤️
+            </motion.p>
+            
+            <motion.div 
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 inline-block"
+            >
+              <p className="text-xl text-white font-medium">
+                "Любовь — это не то, что говорят. Любовь — это то, что чувствуют."
+              </p>
+            </motion.div>
+          </div>
+          
+          {/* Celebration hearts */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            {hearts.map(heart => (
+              <motion.div
+                key={heart.id}
+                className="text-rose-200/90 absolute text-3xl"
+                initial={{ 
+                  left: heart.left,
+                  bottom: "-20px",
+                  opacity: 1,
+                  fontSize: heart.size || "1.5rem"
+                }}
+                animate={{ 
+                  bottom: "110%",
+                  opacity: 0,
+                  rotate: [0, 360]
+                }}
+                transition={{ 
+                  duration: 3 + Math.random() * 2,
+                  delay: parseFloat(heart.animationDelay) || 0,
+                  ease: "linear"
+                }}
+              >
+                ❤️
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
